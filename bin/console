@@ -1,0 +1,25 @@
+<?php
+
+require __DIR__ . '/../src/bootstrap.php';
+
+use App\Application\Commands\SearchAccommodationCommand;
+use App\Domain\Entities\Accommodation;
+
+// Obtener los argumentos de la línea de comandos
+$prefix = $argv[1] ?? '';
+$lang = $argv[2] ?? 'es'; // parametro opcional para el idioma, sino se coloca por defecto español
+
+// Validar el argumento
+if (strlen($prefix) < 3) {
+    echo "Error: Por favor proporcione al menos 3 letras para la búsqueda.\n";
+    exit(1);
+}
+
+if (!Accommodation::isValidLanguage($lang)) {
+    echo "Advertencia: El idioma '{$lang}' no está disponible. Usando idioma por defecto (es).\n";
+    echo "Idiomas disponibles: " . implode(', ', Accommodation::getAvailableLanguages()) . "\n";
+}
+Accommodation::setLanguage($lang);
+// Ejecutar el comando
+$command = new SearchAccommodationCommand();
+$command->execute($prefix, $lang);
